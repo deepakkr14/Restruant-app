@@ -13,8 +13,8 @@ function App() {
   };
   return (
     <Fragment>
-      {showCart && <Cart show={closeCart} />}
-      <Header show={openCart} />
+      {showCart && <Cart onClosebtn={closeCart} />}
+      <Header onShowbtn={openCart} />
       <main>
         <Meals />
       </main>
