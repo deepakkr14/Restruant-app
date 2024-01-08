@@ -9,8 +9,8 @@ const ctx=useContext(CartContext)
   const cartItems = (
     <ul className={classes['cart-items']}>
       {ctx.items.map((item) => (
-        <li>{item.name} {item.price} quantity:{item.eachQty}</li>
-        // <li>{item.name} {item.price} </li>
+        // <li>{item.name} {item.price} quantity:{item.eachQty}</li>
+        <li>{item.name} {item.price} </li>
       ))}
     </ul>
   );
