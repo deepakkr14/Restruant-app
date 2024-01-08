@@ -1,15 +1,62 @@
-import CartContext from "./cart-context"
-const CartProvider=()=>{
-    const addItemToCart=item=>{};
-    const removeItemFromCart=item=>{};
-    const cartContext={
-        items:[],
-    totalAmount:0,
-    addItem:addItemToCart,
-    removeItem:removeItemFromCart
-    }
-return <CartContext.Provider valur={cartContext}>
-    {Props.children}
-</CartContext.Provider>
-}
-export default CartProvider
+import { useReducer } from "react";
+import CartContext from "./cart-context";
+const defaultCartState = {
+  items: [],
+  totalAmount: 0,
+  quantity:0
+};
+// {description:"Finest fish and veggies"
+// name: "Sushi",price: 22.99}
+const cartReducer = (state, action) => {
+  if (action.type=='ADD'){
+const updatedItems=state.items.concat(action.item)
+// const existingItemIndex = state.items.findIndex(item => item.name === action.item.name);
+
+// if (existingItemIndex !== -1) {
+//     // Item exists, update quantity
+//     const updatedItems = state.items.map((item, index) => {
+//         if (index === existingItemIndex) {
+//             return { ...item, eachQty: item.eachQty + 1 };
+//         }
+//         return item;
+//     });
+
+//     return { ...state, items: updatedItems };
+// } 
+const updatedTotalAmount=state.totalAmount+action.item.price;
+const updatedQuantity=state.quantity+1;
+console.log('i am final',updatedItems,updatedTotalAmount)
+    return{
+      items:updatedItems,
+      totalAmount:updatedTotalAmount,
+      quantity:updatedQuantity
+  }};
+  if (action.type=='REMOVE'){
+return 
+  } 
+  return defaultCartState;
+};
+const CartProvider = (Props) => {
+  const [cartState, dispatchCartAction] = useReducer(cartReducer, defaultCartState);
+
+  const addItemToCart = (item) => {
+    console.log('uuuuuuuuuuu',item)
+    dispatchCartAction({type:'ADD',item:item})
+  };
+  const removeItemFromCart = (id) => {
+    dispatchCartAction({type:'REMOVE',id:id})
+  };
+  const cartContext = {
+    items:cartState.items,
+    totalAmount: cartState.totalAmount,
+    addItem: addItemToCart,
+    removeItem: removeItemFromCart,
+    quantity:cartState.quantity
+  };
+  return (
+    <CartContext.Provider value={cartContext}>
+      {Props.children}
+    </CartContext.Provider>
+  );
+};
+export default CartProvider;
