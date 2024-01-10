@@ -1,45 +1,50 @@
-import { useReducer } from "react";
+import { useState } from "react";
 import CartContext from "./cart-context";
-const defaultCartState = {
-  items: [],
-  totalAmount: 0,
-  quantity:0
-};
-// {description:"Finest fish and veggies"
-// name: "Sushi",price: 22.99}
-const cartReducer = (state, action) => {
-  if (action.type=='ADD'){
-const updatedItems=state.items.concat(action.item)
 
-const updatedTotalAmount=state.totalAmount+action.item.price;
-const updatedQuantity=state.quantity+1;
-console.log('i am final',updatedItems,updatedTotalAmount)
-    return{
-      items:updatedItems,
-      totalAmount:updatedTotalAmount,
-      quantity:updatedQuantity
-  }};
-  if (action.type=='REMOVE'){
-return 
-  } 
-  return defaultCartState;
-};
 const CartProvider = (Props) => {
-  const [cartState, dispatchCartAction] = useReducer(cartReducer, defaultCartState);
+  const [items, setItems] = useState([]);
+  const [totalAmount, setAmount] = useState(0);
 
-  const addItemToCart = (item) => {
-    console.log('uuuuuuuuuuu',item)
-    dispatchCartAction({type:'ADD',item:item})
+  const addItemToCart = (item, qty) => {
+    const existingCartItem = items.findIndex(
+      (iteme) => iteme.name === item.name
+    );
+    if (existingCartItem !== -1) {
+      const copy = items;
+      copy[existingCartItem].quantity += Number(qty);
+      setItems(copy);
+    } else {
+      let newObj = { ...item, quantity: qty };
+      const copy = items;
+      copy.push(newObj);
+      setItems(copy);
+    }
+    // TO FIND TOTAL NO OF CART ITEMS
+    let quantity = 0;
+    items.forEach((item) => {
+      quantity = quantity + Number(item.quantity);
+    });
+    setAmount(quantity);
   };
-  const removeItemFromCart = (id) => {
-    dispatchCartAction({type:'REMOVE',id:id})
+  const removeItemFromCart = (item) => {
+    const existingCartItem = items.findIndex(
+      (iteme) => iteme.name === item.name
+    );
+    if (items[existingCartItem].quantity > 1) {
+      const copy = items;
+      copy[existingCartItem].quantity -= 1;
+      setItems(copy);
+    } else {
+      const updatedItems = items.filter((each) => each.name !== item.name);
+      setItems(updatedItems);
+    }
+    setAmount(prev=>prev-1)
   };
   const cartContext = {
-    items:cartState.items,
-    totalAmount: cartState.totalAmount,
+    items: items,
+    totalAmount: totalAmount,
     addItem: addItemToCart,
     removeItem: removeItemFromCart,
-    quantity:cartState.quantity
   };
   return (
     <CartContext.Provider value={cartContext}>
